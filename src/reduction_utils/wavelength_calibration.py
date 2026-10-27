@@ -493,7 +493,7 @@ def compute_all_shifts_whole_spectrum(ref_frame,all_frames,all_errors,verbose=Fa
     x_ref = np.arange(10,len(ref_frame)+10) # add 10 here, this keeps the pixel solution positive and doesn't actually matter since we're not using this as our final solution, only for calculating shifts!
 
     for i,f in enumerate(all_frames):
-        print("cross-correlating frame %d"%i)
+        # print("cross-correlating frame %d"%i)
 
         # replace any nans with a linear interpolation for finding shifts only - the end spectra still contain nans
         if np.any(~np.isfinite(f)):
