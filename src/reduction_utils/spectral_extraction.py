@@ -97,7 +97,7 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
     else:
         override_force_verbose = False
 
-    log = open('reduction_output.log','a')
+    log = open(output_dir+'reduction_output.log','a')
 
     for i,row in enumerate(columns_of_interest):
 
@@ -578,7 +578,7 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
     lh_overlap = []
     rh_overlap = []
 
-    log = open('reduction_output.log','a')
+    log = open(output_dir+'reduction_output.log','a')
 
     for i, row in enumerate(frame):
 
@@ -1053,7 +1053,7 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
 
     background_poly_order_used = []
 
-    log = open('reduction_output.log','w')
+    log = open(output_dir+'reduction_output.log','w')
     log.close()
 
     if "JWST" in instrument:
@@ -1068,7 +1068,7 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
     for i,f in enumerate(science_list):
 
         print(f, '[%.1f%% complete, %d mins since start]'%((i+1)*100./len(science_list),(time.time()-start_time)/60), end='\r')
-        log = open('reduction_output.log','a')
+        log = open(output_dir+'reduction_output.log','a')
         log.write('%s [%.1f%% complete, %d mins since start] \n'%(f,(i+1)*100./len(science_list),(time.time()-start_time)/60))
         log.close()
 
@@ -1436,43 +1436,43 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
             fits_file.close()
 
     try:
-        os.mkdir("pickled_objects")
+        os.mkdir(output_dir+"pickled_objects")
     except:
         pass
 
     for i in range(nstars):
-        pickle.dump(np.array(stellar_fluxes[i::nstars]),open('pickled_objects/star%d_flux.pickle'%(i+1),'wb'))
-        pickle.dump(np.array(stellar_errors[i::nstars]),open('pickled_objects/star%d_error.pickle'%(i+1),'wb'))
-        pickle.dump(np.array(traces[i::nstars]),open('pickled_objects/x_positions_%d.pickle'%(i+1),'wb'))
-        pickle.dump(np.array(FWHM[i::nstars]),open('pickled_objects/fwhm_%d.pickle'%(i+1),'wb'))
-        pickle.dump(np.array(sky_avgs[i::nstars]),open('pickled_objects/background_avg_star%d.pickle'%(i+1),'wb'))
+        pickle.dump(np.array(stellar_fluxes[i::nstars]),open(output_dir+'pickled_objects/star%d_flux.pickle'%(i+1),'wb'))
+        pickle.dump(np.array(stellar_errors[i::nstars]),open(output_dir+'pickled_objects/star%d_error.pickle'%(i+1),'wb'))
+        pickle.dump(np.array(traces[i::nstars]),open(output_dir+'pickled_objects/x_positions_%d.pickle'%(i+1),'wb'))
+        pickle.dump(np.array(FWHM[i::nstars]),open(output_dir+'pickled_objects/fwhm_%d.pickle'%(i+1),'wb'))
+        pickle.dump(np.array(sky_avgs[i::nstars]),open(output_dir+'pickled_objects/background_avg_star%d.pickle'%(i+1),'wb'))
 
         if "JWST" not in instrument:
-            pickle.dump(np.array(sky_lefts[i::nstars]),open('pickled_objects/sky_left_star%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(sky_rights[i::nstars]),open('pickled_objects/sky_right_star%d.pickle'%(i+1),'wb'))
-            # pickle.dump(np.array(sky_polys[i::nstars]),open('pickled_objects/sky_poly_star%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(base_lefts[i::nstars]),open('pickled_objects/flux_base_level_left_star%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(base_rights[i::nstars]),open('pickled_objects/flux_base_level_right_star%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(MAX_COUNTS[i::nstars]),open('pickled_objects/max_counts_%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(scintillation_error[i::nstars]),open('pickled_objects/scintillation_error_%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(readnoise_error[i::nstars]),open('pickled_objects/readnoise_error_%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(poisson_noise[i::nstars]),open('pickled_objects/poisson_noise_%d.pickle'%(i+1),'wb'))
-            pickle.dump(np.array(raw_stellar_fluxes[i::nstars]),open('pickled_objects/star%d_raw_flux.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(sky_lefts[i::nstars]),open(output_dir+'pickled_objects/sky_left_star%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(sky_rights[i::nstars]),open(output_dir+'pickled_objects/sky_right_star%d.pickle'%(i+1),'wb'))
+            # pickle.dump(np.array(sky_polys[i::nstars]),open(output_dir+'pickled_objects/sky_poly_star%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(base_lefts[i::nstars]),open(output_dir+'pickled_objects/flux_base_level_left_star%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(base_rights[i::nstars]),open(output_dir+'pickled_objects/flux_base_level_right_star%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(MAX_COUNTS[i::nstars]),open(output_dir+'pickled_objects/max_counts_%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(scintillation_error[i::nstars]),open(output_dir+'pickled_objects/scintillation_error_%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(readnoise_error[i::nstars]),open(output_dir+'pickled_objects/readnoise_error_%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(poisson_noise[i::nstars]),open(output_dir+'pickled_objects/poisson_noise_%d.pickle'%(i+1),'wb'))
+            pickle.dump(np.array(raw_stellar_fluxes[i::nstars]),open(output_dir+'pickled_objects/star%d_raw_flux.pickle'%(i+1),'wb'))
 
             if 0 in poly_bg_order:
-                pickle.dump(np.array(background_poly_order_used[i::nstars]),open('background_poly_orders_used_%d.pickle'%(i+1),'wb'))
+                pickle.dump(np.array(background_poly_order_used[i::nstars]),open(output_dir+'pickled_objects/background_poly_orders_used_%d.pickle'%(i+1),'wb'))
 
     if "JWST" not in instrument:
-        pickle.dump(np.array(airmass),open('pickled_objects/airmass.pickle','wb'))
-        pickle.dump(np.array(exposure_time_array),open('pickled_objects/exposure_times.pickle','wb'))
+        pickle.dump(np.array(airmass),open(output_dir+'pickled_objects/airmass.pickle','wb'))
+        pickle.dump(np.array(exposure_time_array),open(output_dir+'pickled_objects/exposure_times.pickle','wb'))
 
-    pickle.dump(np.array(obs_time_array),open('pickled_objects/obs_time_array.pickle','wb'))
+    pickle.dump(np.array(obs_time_array),open(output_dir+'pickled_objects/obs_time_array.pickle','wb'))
 
     if use_lacosmic and instrument == "Keck/NIRSPEC" and cosmic_pixel_mask is None:
-        pickle.dump(np.array(cosmic_masked_pixels),open("pickled_objects/cosmic_masked_pixels.pickle","wb"))
+        pickle.dump(np.array(cosmic_masked_pixels),open(output_dir+"pickled_objects/cosmic_masked_pixels.pickle","wb"))
 
     if instrument == "Keck/NIRSPEC":
-        os.rename("m1temp.txt", "pickled_objects/m1temp.txt")
+        os.rename("m1temp.txt", output_dir+"pickled_objects/m1temp.txt")
 
     return np.array(stellar_fluxes),np.array(stellar_errors),np.array(obs_time_array)
 
@@ -1683,7 +1683,7 @@ def main(input_file='extraction_input.txt'):
         master_spectrum = np.nanmedian(f_norm,axis=0)
         residual_spectra = f_norm-master_spectrum
         print("\n\nStandard deviation of residual spectra = %f\n"%(np.nanstd(residual_spectra)))
-        log = open('reduction_output.log','a')
+        log = open(output_dir+'reduction_output.log','a')
         log.write("\n\nStandard deviation of residual spectra = %f\n"%(np.nanstd(residual_spectra)))
 
     # ~ if nstars > 1:
@@ -1778,5 +1778,5 @@ def resample_frame(data,oversampling=10,xmin=0,verbose=False):
 
     return data_resampled
 
-input_file = "../../../data/reduction"+input("Enter reduction number: ")+"/extraction_input.txt"
-main(input_file=input_file)
+output_dir = "../../../data/reduction"+input("Enter reduction number: ")+"/"
+main(input_file=output_dir+"extraction_input.txt")
