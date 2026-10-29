@@ -8,6 +8,8 @@ from scipy.stats import median_abs_deviation as mad
 from scipy.ndimage import median_filter as MF
 from scipy.ndimage import shift
 from astropy.io import fits
+import matplotlib
+matplotlib.use('tkagg')
 import matplotlib.pyplot as plt
 import time
 import pickle
@@ -143,7 +145,7 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
             if np.fabs(popt1[0] + popt1[-1] - amplitude) < amplitude * 0.75:
                 TC = popt1[1] # trace centre
                 trace_centre.append(TC)
-                fwhm.append(popt1[2]*2*np.sqrt(2*np.log(2))) ### save width of gaussian as FWHM after applying conversion
+                fwhm.append(abs(popt1[2]*2*np.sqrt(2*np.log(2)))) ### save width of gaussian as FWHM after applying conversion
                 gauss_std.append(abs(popt1[2]))
 
 
@@ -320,6 +322,22 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
 
     return fitted_positions, delay, np.median(fwhm[np.isfinite(fwhm)]), np.array(gauss_std)
 
+def nan_helper(y):
+    """Helper to handle indices and logical indices of NaNs.
+
+    Input:
+        - y, 1d numpy array with possible NaNs
+    Output:
+        - nans, logical indices of NaNs
+        - index, a function, with signature indices= index(logical_indices),
+          to convert logical indices of NaNs to 'equivalent' indices
+    Example:
+        >>> # linear interpolation of NaNs
+        >>> nans, x= nan_helper(y)
+        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+    """
+
+    return np.isnan(y), lambda z: z.nonzero()[0]
 
 def extract_trace_flux(frame,trace,aperture_width,background_offset,background_width,pre_flat_frame,poly_bg_order,am,exposure_time,verbose,star,mask,instrument,row_min,gauss_std,readout_speed,co_add_rows,rectify_frame,oversampling_factor,gain_file,readnoise_file):
     """The function used to extract the flux of a single spectral trace, using normal extraction"""
@@ -787,6 +805,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         background_subtracted = row[left_bkg_left_hand_edge:right_bkg_right_hand_edge] - background_fit
         clipped_frame.append(row[left_bkg_left_hand_edge:right_bkg_right_hand_edge])
 
+        # Linear interpolation to remove nans
+        if np.any(~np.isfinite(background_subtracted)):
+            temp = background_subtracted.copy()
+            nans, xvals= nan_helper(temp)
+            temp[nans]= np.interp(xvals(nans), xvals(~nans), temp[~nans])
+            background_subtracted = temp
+
         flux.append(sum(background_subtracted[aperture_left_hand_edge-left_bkg_left_hand_edge:aperture_right_hand_edge-left_bkg_left_hand_edge])/oversampling_factor)
         if "JWST" not in instrument:
             flux_base_level_left.append(np.median(background_subtracted[:left_bkg_right_hand_edge-left_bkg_left_hand_edge])/oversampling_factor)
@@ -888,17 +913,17 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
 
     # Now print how many times the background aperture overlapped with the buffer pixels
     if len(lh_overlap) != 0:
-        print("For trace %d..."%(star+1))
+        # print("For trace %d..."%(star+1))
         lh_counted = Counter(lh_overlap)
         for k in sorted(lh_counted.keys()):
-            print("Left hand edge overlaps buffer pixels by %d pixels for %d rows"%(k,lh_counted[k]))
+            # print("Left hand edge overlaps buffer pixels by %d pixels for %d rows"%(k,lh_counted[k]))
             log.write("Left hand edge overlaps buffer pixels by %d pixels for %d rows \n"%(k,lh_counted[k]))
 
     if len(rh_overlap) != 0:
-        print("For trace %d..."%(star+1))
+        # print("For trace %d..."%(star+1))
         rh_counted = Counter(rh_overlap)
         for k in sorted(rh_counted.keys()):
-            print("Right hand edge overlaps buffer pixels by %d pixels for %d rows"%(k,rh_counted[k]))
+            # print("Right hand edge overlaps buffer pixels by %d pixels for %d rows"%(k,rh_counted[k]))
             log.write("Right hand edge overlaps buffer pixels by %d pixels for %d rows"%(k,rh_counted[k]))
 
     log.close()
@@ -1042,7 +1067,7 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
 
     for i,f in enumerate(science_list):
 
-        print(f, '[%.1f%% complete, %d mins since start]'%((i+1)*100./len(science_list),(time.time()-start_time)/60))
+        print(f, '[%.1f%% complete, %d mins since start]'%((i+1)*100./len(science_list),(time.time()-start_time)/60), end='\r')
         log = open('reduction_output.log','a')
         log.write('%s [%.1f%% complete, %d mins since start] \n'%(f,(i+1)*100./len(science_list),(time.time()-start_time)/60))
         log.close()
@@ -1753,5 +1778,5 @@ def resample_frame(data,oversampling=10,xmin=0,verbose=False):
 
     return data_resampled
 
-
-main()
+input_file = "../../../data/reduction"+input("Enter reduction number: ")+"/extraction_input.txt"
+main(input_file=input_file)
