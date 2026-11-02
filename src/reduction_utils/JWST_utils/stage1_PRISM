@@ -23,6 +23,7 @@ echo ""
 echo "****running superbias****"
 echo ""
 strun superbias $1_dqoverridestep.fits
+mv $1_dqoverridestep_superbiasstep.fits $1_superbiasstep.fits
 echo ""
 echo "****running refpix****"
 echo ""
@@ -38,15 +39,16 @@ strun dark_current $1_linearitystep.fits
 echo ""
 echo "****running 1overf_subtraction.py****"
 echo ""
-python data/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask /data2/ju126/data/reduction01/nircam_bad_pixel_mask.pickle
+python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask /data2/ju126/data/reduction01/nircam_bad_pixel_mask.pickle
 echo ""
 echo "****running ramp_fit****"
 echo ""
 strun ramp_fit $1_1overfstep.fits
+mv $1_1overfstep_1_rampfitstep.fits $1_1_rampfitstep.fits
+rm $1_1overfstep_0_rampfitstep.fits
 echo ""
 echo "****running gain_scale****"
 echo ""
-strun gain_scale $1_0_rampfitstep.fits
 strun gain_scale $1_1_rampfitstep.fits
 echo ""
 echo "****running assign_wcs****"
@@ -58,7 +60,6 @@ echo ""
 strun extract_2d $1_1_assignwcsstep.fits
 #echo ""
 #echo "****cleaning directory****"
-#rm $1_0_rampfitstep.fits
 #rm $1_1_rampfitstep.fits
 #rm $1_darkcurrentstep.fits
 #rm $1_dqinitstep.fits

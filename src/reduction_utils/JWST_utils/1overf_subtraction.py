@@ -7,7 +7,7 @@ import sys
 sys.path.append('/Users/ahrer/Documents/GitHub/Tiberius/src')
 from global_utils import parseInput
 
-home = str(Path.home())
+home = "/data2/ju126/data"
 
 parser = argparse.ArgumentParser(description="subtract 1/f noise at the group stage")
 parser.add_argument('fits_file',help='the name of the fits file to load in')
@@ -73,7 +73,7 @@ for i in range(nints):
 
     for g in range(ngroups):
 
-        print("working on integration %d, group %d"%(i,g))
+        # print("working on integration %d, group %d"%(i,g))
 
         image = group_flux[g]
 
