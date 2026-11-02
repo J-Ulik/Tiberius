@@ -1,7 +1,7 @@
 #!/bin/bash
 # following steps as defined here: https://jwst-pipeline.readthedocs.io/en/latest/jwst/pipeline/calwebb_detector1.html#calwebb-detector1
 #conda activate JWST
-export CRDS_PATH=$HOME/crds_cache/jwst
+export CRDS_PATH=/data2/ju126/data/crds_cache/jwst
 export CRDS_SERVER_URL=https://jwst-crds.stsci.edu
 echo ""
 echo "****running group scale****"
@@ -18,11 +18,11 @@ strun saturation $1_dqinitstep.fits
 echo ""
 echo "****running saturation_dq_override.py****"
 echo ""
-python $HOME/python/Tiberius/src/reduction_utils/JWST_utils/saturation_dq_override.py $1_saturationstep.fits
+python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/saturation_dq_override.py $1_saturationstep.fits
 echo ""
 echo "****running superbias****"
 echo ""
-strun superbias $1_saturationstep.fits
+strun superbias $1_dqoverridestep.fits
 echo ""
 echo "****running refpix****"
 echo ""
@@ -38,11 +38,11 @@ strun dark_current $1_linearitystep.fits
 echo ""
 echo "****running 1overf_subtraction.py****"
 echo ""
-python $HOME/python/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask prism_bad_pixel_mask.pickle
+python data/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask /data2/ju126/data/reduction01/nircam_bad_pixel_mask.pickle
 echo ""
 echo "****running ramp_fit****"
 echo ""
-strun ramp_fit $1_darkcurrentstep.fits
+strun ramp_fit $1_1overfstep.fits
 echo ""
 echo "****running gain_scale****"
 echo ""
@@ -56,15 +56,15 @@ echo ""
 echo "****running extract_2d****"
 echo ""
 strun extract_2d $1_1_assignwcsstep.fits
-echo ""
-echo "****cleaning directory****"
-rm $1_0_rampfitstep.fits
-rm $1_1_rampfitstep.fits
-rm $1_darkcurrentstep.fits
-rm $1_dqinitstep.fits
-rm $1_groupscalestep.fits
-rm $1_linearitystep.fits
-rm $1_refpixstep.fits
-rm $1_saturationstep.fits
-rm $1_superbiasstep.fits
+#echo ""
+#echo "****cleaning directory****"
+#rm $1_0_rampfitstep.fits
+#rm $1_1_rampfitstep.fits
+#rm $1_darkcurrentstep.fits
+#rm $1_dqinitstep.fits
+#rm $1_groupscalestep.fits
+#rm $1_linearitystep.fits
+#rm $1_refpixstep.fits
+#rm $1_saturationstep.fits
+#rm $1_superbiasstep.fits
 #conda deactivate

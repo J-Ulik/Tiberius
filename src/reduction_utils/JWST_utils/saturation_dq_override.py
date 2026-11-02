@@ -42,6 +42,7 @@ for g in range(ngroups):
             f[extension].data[g][i] = sat_mask[i]
 
 # ~ new_name = args.fits_file.split(".")[0]+"_newDQ.fits"
-new_name = args.fits_file
+# new_name = args.fits_file
+new_name = args.fits_file.replace("saturationstep","dqoverridestep")
 
 f.writeto(new_name,overwrite=True)

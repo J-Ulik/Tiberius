@@ -135,6 +135,7 @@ scale_factor_time_series = scale_factor.mean(axis=1)
 scale_factor_time_series_standardized = (scale_factor_time_series-scale_factor_time_series.mean())/scale_factor_time_series.std()
 # pickle.dump(scale_factor_time_series_standardized,open("bias_scale_factor.pickle","wb"))
 
-# new_name = args.fits_file.split(".")[0]+"_1overf_JK.fits"
-new_name = args.fits_file
+# new_name = args.fits_file.split(".")[0]+"_1overf.fits"
+# new_name = args.fits_file
+new_name = args.fits_file.replace("darkcurrentstep","1overfstep")
 f.writeto(new_name,overwrite=True)
