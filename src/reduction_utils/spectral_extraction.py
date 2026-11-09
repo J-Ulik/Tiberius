@@ -806,13 +806,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         clipped_frame.append(row[left_bkg_left_hand_edge:right_bkg_right_hand_edge])
 
         # Linear interpolation to remove nans
-        if np.any(~np.isfinite(background_subtracted)):
-            temp = background_subtracted.copy()
-            nans, xvals= nan_helper(temp)
-            temp[nans]= np.interp(xvals(nans), xvals(~nans), temp[~nans])
-            background_subtracted = temp
+        # if np.any(~np.isfinite(background_subtracted)):
+        #     temp = background_subtracted.copy()
+        #     nans, xvals= nan_helper(temp)
+        #     temp[nans]= np.interp(xvals(nans), xvals(~nans), temp[~nans])
+        #     background_subtracted = temp
 
-        flux.append(sum(background_subtracted[aperture_left_hand_edge-left_bkg_left_hand_edge:aperture_right_hand_edge-left_bkg_left_hand_edge])/oversampling_factor)
+        flux.append(np.nansum(background_subtracted[aperture_left_hand_edge-left_bkg_left_hand_edge:aperture_right_hand_edge-left_bkg_left_hand_edge])/oversampling_factor)
         if "JWST" not in instrument:
             flux_base_level_left.append(np.median(background_subtracted[:left_bkg_right_hand_edge-left_bkg_left_hand_edge])/oversampling_factor)
             flux_base_level_right.append(np.median(background_subtracted[right_bkg_left_hand_edge-left_bkg_left_hand_edge:])/oversampling_factor)

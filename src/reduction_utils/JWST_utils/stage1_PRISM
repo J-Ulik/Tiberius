@@ -10,36 +10,36 @@ strun group_scale $1_uncal.fits
 echo ""
 echo "****running dq_init****"
 echo ""
-strun dq_init $1_groupscalestep.fits
+strun dq_init $1_groupscalestep.fits && rm $1_groupscalestep.fits
 echo ""
 echo "****running saturation****"
 echo ""
-strun saturation $1_dqinitstep.fits
+strun saturation $1_dqinitstep.fits && rm $1_dqinitstep.fits
 echo ""
 echo "****running saturation_dq_override.py****"
 echo ""
-python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/saturation_dq_override.py $1_saturationstep.fits
+python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/saturation_dq_override.py $1_saturationstep.fits && rm $1_saturationstep.fits
 echo ""
 echo "****running superbias****"
 echo ""
-strun superbias $1_dqoverridestep.fits
+strun superbias $1_dqoverridestep.fits && rm $1_dqoverridestep.fits
 mv $1_dqoverridestep_superbiasstep.fits $1_superbiasstep.fits
 echo ""
 echo "****running refpix****"
 echo ""
-strun refpix $1_superbiasstep.fits --odd_even_columns True
+strun refpix $1_superbiasstep.fits --odd_even_columns True && rm $1_superbiasstep.fits
 echo ""
 echo "****running linearity****"
 echo ""
-strun linearity $1_refpixstep.fits
+strun linearity $1_refpixstep.fits && rm $1_refpixstep.fits
 echo ""
 echo "****running dark_current****"
 echo ""
-strun dark_current $1_linearitystep.fits
+strun dark_current $1_linearitystep.fits && rm $1_linearitystep.fits
 echo ""
 echo "****running 1overf_subtraction.py****"
 echo ""
-python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask /data2/ju126/data/reduction01/nircam_bad_pixel_mask.pickle
+python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.py $1_darkcurrentstep.fits --pixel_mask /data2/ju126/data/reduction01/nircam_bad_pixel_mask.pickle && rm $1_darkcurrentstep.fits
 echo ""
 echo "****running ramp_fit****"
 echo ""
@@ -57,15 +57,4 @@ strun assign_wcs $1_1_gainscalestep.fits
 echo ""
 echo "****running extract_2d****"
 echo ""
-strun extract_2d $1_1_assignwcsstep.fits
-#echo ""
-#echo "****cleaning directory****"
-#rm $1_1_rampfitstep.fits
-#rm $1_darkcurrentstep.fits
-#rm $1_dqinitstep.fits
-#rm $1_groupscalestep.fits
-#rm $1_linearitystep.fits
-#rm $1_refpixstep.fits
-#rm $1_saturationstep.fits
-#rm $1_superbiasstep.fits
-#conda deactivate
+strun extract_2d $1_1_assignwcsstep.fits && rm $1_1_assignwcsstep.fits
