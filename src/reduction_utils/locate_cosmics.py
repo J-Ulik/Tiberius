@@ -186,7 +186,7 @@ def check_cosmic_frames(cosmic_pixels,frame_cut_off):
 def replace_cosmics(cosmic_pixels,medians,science_list,nints,jwst=False):
 
     try:
-        os.mkdir("cosmic_cleaned_fits")
+        os.mkdir("../cosmic_cleaned_fits")
     except:
         pass
 
@@ -208,7 +208,7 @@ def replace_cosmics(cosmic_pixels,medians,science_list,nints,jwst=False):
             else:
                 jwst_index_counter = i
 
-            print("Cleaning integration %d, %s"%(i,filename))
+            # print("Cleaning integration %d, %s"%(i,filename))
 
             for row in range(nrows):
                 new_fits_file["SCI"].data[jwst_index_counter][row][c[row]] = medians[i][row][c[row]]
@@ -216,7 +216,7 @@ def replace_cosmics(cosmic_pixels,medians,science_list,nints,jwst=False):
             if i in nints-1:
                 fits_file.close()
                 print("Saving cosmic_cleaned_fits/%s"%(filename))
-                new_fits_file.writeto("cosmic_cleaned_fits/%s"%filename,overwrite=True)
+                new_fits_file.writeto("../cosmic_cleaned_fits/%s"%filename,overwrite=True)
 
         return
 
@@ -307,6 +307,7 @@ pickle.dump(cosmic_pixels,open("cosmic_pixel_mask_%dsigma_clip.pickle"%cut_off,"
 # optionally save new fits files with cosmics replaced by median pixel values
 # note: this doesn't offer much improvement over the interpolation performed in long_slit_science_extraction.py
 
-replace = input("Replace cosmic values with median and save to new fits? [y/n]: ")
-if replace == "y":
-    replace_cosmics(cosmic_pixels,median_values,science_list,nints,args.jwst)
+# replace = input("Replace cosmic values with median and save to new fits? [y/n]: ")
+# if replace == "y":
+print("Saving cosmic cleaned values...")
+replace_cosmics(cosmic_pixels,median_values,science_list,nints,args.jwst)
