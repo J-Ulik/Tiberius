@@ -1687,7 +1687,7 @@ def main(input_file='extraction_input.txt'):
         log.write("\n\nStandard deviation of residual spectra = %f\n"%(np.nanstd(residual_spectra)))
 
     # ~ if nstars > 1:
-    generate_wl_curve(sf,se,time,nstars,overwrite)
+    # generate_wl_curve(sf,se,time,nstars,overwrite)
     return
 
 
