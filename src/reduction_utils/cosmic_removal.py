@@ -414,15 +414,26 @@ def flag_bad_pixels(frame,cut_off=5,max_pixels_per_row=10,plot_rows=None,use_mad
         median = np.array([median_filter(row,mf_box_width) for row in frame[:,left_col:right_col]])
         residuals = median - frame[:,left_col:right_col]
 
+    #if use_mad:
+    #    if std_box_width > 0:
+    #        threshold_array = []
+    #        for i in range(nrows):
+    #            threshold_array.append(np.array([median_absolute_deviation(residuals[i][j:j+std_box_width],ignore_nan=True) for j in range(0,ncols,std_box_width)]))
+    #        threshold = np.zeros_like(residuals)
+    #        for i in range(nrows):
+    #            for j,k in enumerate(range(0,ncols,std_box_width)):
+    #                threshold[i][k:k+std_box_width] = threshold_array[i][j]
+
     if use_mad:
         if std_box_width > 0:
-            threshold_array = []
-            for i in range(nrows):
-                threshold_array.append(np.array([median_absolute_deviation(residuals[i][j:j+std_box_width],ignore_nan=True) for j in range(0,ncols,std_box_width)]))
             threshold = np.zeros_like(residuals)
+            window = std_box_width // 2
             for i in range(nrows):
-                for j,k in enumerate(range(0,ncols,std_box_width)):
-                    threshold[i][k:k+std_box_width] = threshold_array[i][j]
+                for j in range(ncols):
+                    start = max(0, j - window)
+                    end = min(ncols, j + window + 1)
+                    threshold[i, j] = median_absolute_deviation(residuals[i, start:end],ignore_nan=True)
+
         else:
             threshold = median_absolute_deviation(residuals,ignore_nan=True,axis=axis)
     else:
