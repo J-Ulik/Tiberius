@@ -4,7 +4,6 @@ import argparse
 import pickle
 from pathlib import Path
 import sys
-sys.path.append('/Users/ahrer/Documents/GitHub/Tiberius/src')
 from global_utils import parseInput
 
 home = "/data2/ju126/data"
