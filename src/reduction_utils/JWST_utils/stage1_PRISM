@@ -44,9 +44,14 @@ python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/1overf_subtraction.p
 echo ""
 echo "****running ramp_fit****"
 echo ""
-strun ramp_fit $1_1overfstep.fits && rm $1_1overfstep.fits
+strun ramp_fit $1_1overfstep.fits
 mv $1_1overfstep_1_rampfitstep.fits $1_1_rampfitstep.fits
 rm $1_1overfstep_0_rampfitstep.fits
+echo ""
+echo "****running nan_cleaning***"
+echo ""
+python /data2/ju126/Tiberius/src/reduction_utils/JWST_utils/nan_cleaning.py $1 && rm $1_1overfstep.fits
+mv $1_nancleaningstep.fits $1_1_rampfitstep.fits
 echo ""
 echo "****running gain_scale****"
 echo ""
