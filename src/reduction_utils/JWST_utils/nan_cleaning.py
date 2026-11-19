@@ -64,7 +64,10 @@ for integration in range(n1["SCI"].data.shape[0]):
 
             # https://stcal.readthedocs.io/en/latest/stcal/ramp_fitting/description.html#ramp-output-products
             # No segment weighting is required as will only have one segment after removing saturated pixels (which are always at the end)
-            n1["SCI"].data[integration, x,y] = np.polyfit(times[unsaturated] ,n2["SCI"].data[integration,:,x,y][unsaturated], 1)[0].astype(np.float32)
+            try:
+                n1["SCI"].data[integration, x,y] = np.polyfit(times[unsaturated] ,n2["SCI"].data[integration,:,x,y][unsaturated], 1)[0].astype(np.float32)
+            except:
+                n1["SCI"].data[integration, x,y] = 0
 
             # Errors!
             rnoise = (12*readnoise[x,y]**2 / (ngroups**3-ngroups)*(tgroup**2)*(gain[x,y]**2) )
