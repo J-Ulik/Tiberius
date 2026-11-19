@@ -55,6 +55,7 @@ tgroup = n1[0].header["TGROUP"]
 # Manual ramp fitting of NaN values
 for integration in range(n1["SCI"].data.shape[0]):
     times = (60*60*24)*np.linspace(0, n2["INT_TIMES"].data[integration][3]-n2["INT_TIMES"].data[integration][1], num=n2["SCI"].data.shape[1])
+    poor_fit_mask = np.full_like(nan_mask, False)
 
     for (x,y),val in np.ndenumerate(nan_mask):
         if val==True:
@@ -68,6 +69,7 @@ for integration in range(n1["SCI"].data.shape[0]):
                 n1["SCI"].data[integration, x,y] = np.polyfit(times[unsaturated] ,n2["SCI"].data[integration,:,x,y][unsaturated], 1)[0].astype(np.float32)
             except:
                 n1["SCI"].data[integration, x,y] = 0
+                poor_fit_mask[x,y] = True
 
             # Errors!
             rnoise = (12*readnoise[x,y]**2 / (ngroups**3-ngroups)*(tgroup**2)*(gain[x,y]**2) )
@@ -77,16 +79,12 @@ for integration in range(n1["SCI"].data.shape[0]):
             n1["ERR"].data[integration, x,y] = np.sqrt(poisson + rnoise)
 
 
-# Replacing values which are wildly different with neigbouring values
-mf_box_width = 7
-median_frame = np.median(n1["SCI"].data, axis=0)
-median = np.array([medfilt(row,mf_box_width) for row in median_frame])
-residuals = median - median_frame
+    # Replacing values which are wildly different with neigbouring values
+    mf_box_width = 7
+    n1_mask = c.flag_bad_pixels(n1["SCI"].data[integration],verbose=False,std_box_width=51,mf_box_width=mf_box_width,cut_off=5,use_mad=False,max_pixels_per_row = 200)
+    mask = (poor_fit_mask | n1_mask) & nan_mask
 
-n1_mask = c.flag_bad_pixels(median_frame,verbose=False,std_box_width=51,mf_box_width=mf_box_width,cut_off=5,use_mad=False,max_pixels_per_row = 200)
-
-for integration in range(n1["SCI"].data.shape[0]):
-    for (x,y),val in np.ndenumerate(n1_mask):
+    for (x,y),val in np.ndenumerate(mask):
         if val==True:
             if y==0:
                 n1["SCI"].data[integration, x,y] = n1["SCI"].data[integration, x,y+1]
