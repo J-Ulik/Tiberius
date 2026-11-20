@@ -26,7 +26,7 @@ from wavelength_calibration import rebin_spec
 from astropy import units as u
 from Keck_utils import Keck_order_masking as KO
 from astropy.time import Time,TimeDelta
-
+import multiprocessing as mp
 
 # Prevent matplotlib plotting frames upside down
 plt.rcParams['image.origin'] = 'lower'
@@ -1778,5 +1778,6 @@ def resample_frame(data,oversampling=10,xmin=0,verbose=False):
 
     return data_resampled
 
-output_dir = "../../../data/reduction"+input("Enter reduction number: ")+"/"
-main(input_file=output_dir+"extraction_input.txt")
+if __name__ = "__main__":
+    output_dir = "../../../data/reduction"+input("Enter reduction number: ")+"/"
+    main(input_file=output_dir+"extraction_input.txt")
