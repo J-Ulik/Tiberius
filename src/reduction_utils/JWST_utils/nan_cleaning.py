@@ -81,7 +81,7 @@ for integration in range(n1["SCI"].data.shape[0]):
 
     # Replacing values which are wildly different with neigbouring values
     mf_box_width = 7
-    n1_mask = c.flag_bad_pixels(n1["SCI"].data[integration],verbose=False,std_box_width=51,mf_box_width=mf_box_width,cut_off=5,use_mad=False,max_pixels_per_row = 200)
+    n1_mask = c.flag_bad_pixels(n1["SCI"].data[integration].astype(np.float32),verbose=False,std_box_width=51,mf_box_width=mf_box_width,cut_off=5,use_mad=False,max_pixels_per_row = 200)
     mask = (poor_fit_mask | n1_mask) & nan_mask
 
     for (x,y),val in np.ndenumerate(mask):
