@@ -1033,25 +1033,28 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
         aperture_log = open('aperture_log.log','w')
         aperture_log.close()
 
-    stellar_fluxes = []
-    stellar_errors = []
-    sky_lefts = []
-    sky_rights = []
-    sky_avgs = []
-    sky_polys = []
-    base_lefts = []
-    base_rights = []
-    traces = []
-    FWHM = []
-    MAX_COUNTS = []
-    raw_stellar_fluxes = []
-    cosmic_masked_pixels = []
+   nframes = len(science_list)
 
-    scintillation_error = []
-    readnoise_error = []
-    poisson_noise = []
+   stellar_fluxes = np.full((nframes, nstars), np.nan)
+   stellar_errors = np.full((nframes, nstars), np.nan)
+   sky_lefts = np.full((nframes, nstars), np.nan)
+   sky_rights = np.full((nframes, nstars), np.nan)
+   sky_avgs = np.full((nframes, nstars), np.nan)
+   base_lefts = np.full((nframes, nstars), np.nan)
+   base_rights = np.full((nframes, nstars), np.nan)
 
-    background_poly_order_used = []
+   traces = np.full((nframes, nstars, row_max-row_min), np.nan)
+   FWHM = np.full((nframes, nstars, row_max-row_min), np.nan)
+
+   MAX_COUNTS = np.full((nframes, nstars), np.nan)
+   raw_stellar_fluxes = np.full((nframes, nstars), np.nan)
+   cosmic_masked_pixels = [] * nframes
+
+   scintillation_error = np.full((nframes, nstars), np.nan)
+   readnoise_error = np.full((nframes, nstars), np.nan)
+   poisson_noise = np.full((nframes, nstars), np.nan)
+
+   background_poly_order_used = np.full((nframes, nstars), np.nan)
 
     log = open(output_dir+'reduction_output.log','w')
     log.close()
