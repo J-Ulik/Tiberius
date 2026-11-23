@@ -1,4 +1,4 @@
-#### Author of this code: James Kirk
+f#### Author of this code: James Kirk
 #### Contact: jameskirk@live.co.uk
 
 import numpy as np
@@ -988,10 +988,6 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
         readnoise_file = readnoise_file[row_min:row_max]
         print("Mean readnoise = %.3f"%(readnoise_file.mean()))
 
-    obs_time_array = []
-    airmass = []
-    exposure_time_array = []
-
     guess_location = trace_dict['guess_locations']
     search_width = trace_dict['search_width']
     gaussian_width = trace_dict['gaussian_width']
@@ -1034,6 +1030,10 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
         aperture_log.close()
 
    nframes = len(science_list)
+
+    obs_time_array = np.full(nframes, np.nan)
+    airmass = np.full(nframes, np.nan)
+    exposure_time_array = np.full(nframes, np.nan)
 
    stellar_fluxes = np.full((nframes, nstars), np.nan)
    stellar_errors = np.full((nframes, nstars), np.nan)
