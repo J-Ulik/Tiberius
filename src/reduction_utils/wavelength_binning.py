@@ -532,7 +532,7 @@ def create_wvl_bins(wvl_solution,bin_width=None,R=None,first_pixel=0,last_pixel=
         bin_edges = [wvl_solution[0]]
         while bin_edges[-1] < wvl_solution[-1]:
             next_wvl = bin_edges[-1]*((2*R+1)/(2*R-1))
-            next_loc = np.searchsorted(wvl_solution, 1)-1
+            next_loc = np.searchsorted(wvl_solution, next_wvl)-1
 
             if wvl_solution[next_loc] == wvl_solution[-1]:
                 bin_edges.append(wvl_solution[-1])
@@ -542,7 +542,6 @@ def create_wvl_bins(wvl_solution,bin_width=None,R=None,first_pixel=0,last_pixel=
                 bin_edges.append(wvl_solution[next_loc])
             else:
                 bin_edges.append(wvl_solution[next_loc + 1])
-            print(bin_edges[-1])
 
         bin_centres = bin_edges[:-1]+np.diff(bin_edges)/2.
         bin_widths = np.diff(bin_edges)
