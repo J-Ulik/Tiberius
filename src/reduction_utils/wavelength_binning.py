@@ -494,12 +494,13 @@ def wvl_bin_data(flux1,err1,flux2,err2,wvl_solution,bins,ancillary_data=None,wei
                np.transpose(np.array(photon_noise_star1)),np.transpose(np.array(photon_noise_star2)),np.transpose(SN_1),np.transpose(SN_2)
 
 
-def create_wvl_bins(wvl_solution,bin_width=None,first_pixel=0,last_pixel=None,native_resolution=False):
-    """A function that defines the bin edges and centres given bin width (in pixels) + first and last pixels.
+def create_wvl_bins(wvl_solution,bin_width=None,R=None,first_pixel=0,last_pixel=None,native_resolution=False):
+    """A function that defines the bin edges and centres given bin width (in pixels) or resolution R, plus first and last pixels.
 
     Inputs:
     wvl_solution - the wavelength solution in A/um
-    bin_width - the width of the bins in pixels. Not necessary if native_resolution = Tue
+    bin_width - the width of the bins in pixels. Not necessary if native_resolution = True
+    R - target resolution for each bin. If both bin_width and R are specified the function will utilise bin_width
     first_pixel - the first pixel to start the bins at. Default = first pixel
     last_pixel - the final pixel to end the bins at. Default = final pixel
     native_resolution - True/False - are we working at the native resolution of the instrument?
@@ -514,22 +515,45 @@ def create_wvl_bins(wvl_solution,bin_width=None,first_pixel=0,last_pixel=None,na
     # ~ if last_pixel == len(wvl_solution):
         # ~ last_pixel -= 1
 
-    if native_resolution:
-        bin_centres = wvl_solution[first_pixel:last_pixel]
-        bin_widths = np.diff(bin_centres)/2
-        bin_widths = np.hstack((bin_widths[0],bin_widths))
-        bin_edges = wvl_solution[first_pixel:last_pixel]
-    else:
-        if last_pixel is None:
-            last_pixel = -1
-        bin_edges = np.hstack((wvl_solution[first_pixel:last_pixel:bin_width],wvl_solution[last_pixel]))
+    if bin_width is not None:
+        if native_resolution:
+            bin_centres = wvl_solution[first_pixel:last_pixel]
+            bin_widths = np.diff(bin_centres)/2
+            bin_widths = np.hstack((bin_widths[0],bin_widths))
+            bin_edges = wvl_solution[first_pixel:last_pixel]
+        else:
+            if last_pixel is None:
+                last_pixel = -1
+            bin_edges = np.hstack((wvl_solution[first_pixel:last_pixel:bin_width],wvl_solution[last_pixel]))
+            bin_centres = bin_edges[:-1]+np.diff(bin_edges)/2.
+            bin_widths = np.diff(bin_edges)
+
+    elif R is not None:
+        bin_edges = [wvl_solution[0]]
+        while bin_edges[-1] < wvl_solution[-1]:
+            next_wvl = bin_edges[-1]*((2*R+1)/(2*R-1))
+            next_loc = np.searchsorted(wvl_solution, 1)-1
+
+            if wvl_solution[next_loc] == wvl_solution[-1]:
+                bin_edges.append(wvl_solution[-1])
+            elif bin_edges[-1] == wvl_solution[next_loc]:
+                bin_edges.append(wvl_solution[next_loc + 1])
+            elif abs( R - ( ((bin_edges[-1]+wvl_solution[next_loc])/2) / (wvl_solution[next_loc]-bin_edges[-1]) ) ) < abs( R - ( ((bin_edges[-1]+wvl_solution[next_loc+1])/2) / (wvl_solution[next_loc+1]-bin_edges[-1]) ) ):
+                bin_edges.append(wvl_solution[next_loc])
+            else:
+                bin_edges.append(wvl_solution[next_loc + 1])
+            print(bin_edges[-1])
+
         bin_centres = bin_edges[:-1]+np.diff(bin_edges)/2.
         bin_widths = np.diff(bin_edges)
+
+    else:
+        print("bin_width or R must be specified!")
+        return
 
     nbins = len(bin_centres)
     print("%d bins created with this setup, with a resolution R between %d--%d and a mean R = %d"%(nbins,np.min(bin_centres/bin_widths),np.max(bin_centres/bin_widths),np.mean(bin_centres/bin_widths)))
     return bin_edges,bin_centres,bin_widths,nbins
-
 
 
 
